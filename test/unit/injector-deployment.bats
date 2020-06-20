@@ -4,7 +4,7 @@ load _helpers
 
 @test "injector/deployment: default injector.enabled" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
@@ -13,7 +13,7 @@ load _helpers
 
 @test "injector/deployment: enable with injector.enabled true" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.enabled=true' \
       . | tee /dev/stderr |
@@ -23,7 +23,7 @@ load _helpers
 
 @test "injector/deployment: disable with global.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'global.enabled=false' \
       --set 'injector.enabled=true' \
@@ -34,7 +34,7 @@ load _helpers
 
 @test "injector/deployment: image defaults to injector.image" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.image.repository=foo' \
       --set 'injector.image.tag=1.2.3' \
@@ -42,7 +42,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].image' | tee /dev/stderr)
   [ "${actual}" = "foo:1.2.3" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.image.repository=foo' \
       --set 'injector.image.tag=1.2.3' \
@@ -53,7 +53,7 @@ load _helpers
 
 @test "injector/deployment: default imagePullPolicy" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].imagePullPolicy' | tee /dev/stderr)
@@ -62,7 +62,7 @@ load _helpers
 
 @test "injector/deployment: default resources" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].resources' | tee /dev/stderr)
@@ -71,7 +71,7 @@ load _helpers
 
 @test "injector/deployment: custom resources" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.enabled=true' \
       --set 'injector.resources.requests.memory=256Mi' \
@@ -80,7 +80,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].resources.requests.memory' | tee /dev/stderr)
   [ "${actual}" = "256Mi" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.enabled=true' \
       --set 'injector.resources.limits.memory=256Mi' \
@@ -89,7 +89,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].resources.limits.memory' | tee /dev/stderr)
   [ "${actual}" = "256Mi" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml \
       --set 'injector.enabled=true' \
       --set 'injector.resources.requests.cpu=250m' \
@@ -97,7 +97,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].resources.requests.cpu' | tee /dev/stderr)
   [ "${actual}" = "250m" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml \
       --set 'injector.enabled=true' \
       --set 'injector.resources.limits.cpu=250m' \
@@ -108,7 +108,7 @@ load _helpers
 
 @test "injector/deployment: manual TLS environment vars" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.certs.secretName=foobar' \
       --set 'injector.certs.certName=test.crt' \
@@ -135,13 +135,13 @@ load _helpers
 
 @test "injector/deployment: auto TLS by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].volumeMounts | length' | tee /dev/stderr)
   [ "${actual}" = "0" ]
 
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].env' | tee /dev/stderr)
@@ -157,7 +157,7 @@ load _helpers
 
 @test "injector/deployment: with externalVaultAddr" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.externalVaultAddr=http://vault-outside' \
       . | tee /dev/stderr |
@@ -174,7 +174,7 @@ load _helpers
 
 @test "injector/deployment: without externalVaultAddr" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --release-name not-external-test  \
       --namespace default \
@@ -192,7 +192,7 @@ load _helpers
 
 @test "injector/deployment: default authPath" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].env' | tee /dev/stderr)
@@ -208,7 +208,7 @@ load _helpers
 
 @test "injector/deployment: custom authPath" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.authPath=auth/k8s' \
       . | tee /dev/stderr |
@@ -225,7 +225,7 @@ load _helpers
 
 @test "injector/deployment: default logLevel" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].env' | tee /dev/stderr)
@@ -241,7 +241,7 @@ load _helpers
 
 @test "injector/deployment: custom logLevel" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.logLevel=foo' \
       . | tee /dev/stderr |
@@ -258,7 +258,7 @@ load _helpers
 
 @test "injector/deployment: default logFormat" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].env' | tee /dev/stderr)
@@ -274,7 +274,7 @@ load _helpers
 
 @test "injector/deployment: custom logFormat" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.logFormat=json' \
       . | tee /dev/stderr |
@@ -291,7 +291,7 @@ load _helpers
 
 @test "injector/deployment: default revoke on shutdown" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq -r '.spec.template.spec.containers[0].env' | tee /dev/stderr)
@@ -307,7 +307,7 @@ load _helpers
 
 @test "injector/deployment: custom revoke on shutdown" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.revokeOnShutdown=true' \
       . | tee /dev/stderr |
@@ -324,7 +324,7 @@ load _helpers
 
 @test "injector/deployment: disable security context when openshift enabled" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'global.openshift=true' \
       . | tee /dev/stderr |
@@ -340,7 +340,7 @@ load _helpers
 
 @test "injector/deployment: set extraEnvironmentVars" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.extraEnvironmentVars.FOO=bar' \
       --set 'injector.extraEnvironmentVars.FOOBAR=foobar' \
@@ -378,7 +378,7 @@ load _helpers
 
 @test "injector/deployment: affinity not set by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq '.spec.template.spec | .affinity? == null' | tee /dev/stderr)
@@ -387,7 +387,7 @@ load _helpers
 
 @test "injector/deployment: affinity can be set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.affinity=foobar' \
       . | tee /dev/stderr |
@@ -400,7 +400,7 @@ load _helpers
 
 @test "injector/deployment: tolerations not set by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq '.spec.template.spec | .tolerations? == null' | tee /dev/stderr)
@@ -409,7 +409,7 @@ load _helpers
 
 @test "injector/deployment: tolerations can be set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.tolerations=foobar' \
       . | tee /dev/stderr |
@@ -422,7 +422,7 @@ load _helpers
 
 @test "injector/deployment: nodeSelector is not set by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq '.spec.template.spec.nodeSelector' | tee /dev/stderr)
@@ -431,7 +431,7 @@ load _helpers
 
 @test "injector/deployment: nodeSelector can be set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml \
       --set 'injector.nodeSelector=testing' \
       . | tee /dev/stderr |
@@ -444,7 +444,7 @@ load _helpers
 
 @test "injector/deployment: priorityClassName not set by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       . | tee /dev/stderr |
       yq '.spec.template.spec | .priorityClassName? == null' | tee /dev/stderr)
@@ -453,7 +453,7 @@ load _helpers
 
 @test "injector/deployment: priorityClassName can be set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'injector.priorityClassName=armaggeddon' \
       . | tee /dev/stderr |
@@ -465,7 +465,7 @@ load _helpers
 
 @test "injector/deployment: OpenShift - runAsUser disabled" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'global.openshift=true' \
       . | tee /dev/stderr |
@@ -475,7 +475,7 @@ load _helpers
 
 @test "injector/deployment: OpenShift - runAsGroup disabled" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-deployment.yaml  \
       --set 'global.openshift=true' \
       . | tee /dev/stderr |

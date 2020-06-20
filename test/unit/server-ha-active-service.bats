@@ -4,7 +4,7 @@ load _helpers
 
 @test "server/ha-active-Service: generic annotations" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.annotations=vaultIsAwesome: true' \
@@ -15,7 +15,7 @@ load _helpers
 
 @test "server/ha-active-Service: disable with ha.enabled false" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml  \
       --set 'server.ha.enabled=false' \
       --set 'server.service.enabled=true' \
@@ -26,7 +26,7 @@ load _helpers
 
 @test "server/ha-active-Service: disable with server.service.enabled false" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'server.service.enabled=false' \
@@ -37,7 +37,7 @@ load _helpers
 
 @test "server/ha-active-Service: type empty by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
@@ -47,7 +47,7 @@ load _helpers
 
 @test "server/ha-active-Service: type can set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.type=NodePort' \
@@ -58,7 +58,7 @@ load _helpers
 
 @test "server/ha-active-Service: clusterIP empty by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
@@ -68,7 +68,7 @@ load _helpers
 
 @test "server/ha-active-Service: clusterIP can set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.clusterIP=None' \
@@ -79,14 +79,14 @@ load _helpers
 
 @test "server/ha-active-Service: port and targetPort will be 8200 by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
       yq -r '.spec.ports[0].port' | tee /dev/stderr)
   [ "${actual}" = "8200" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
@@ -96,7 +96,7 @@ load _helpers
 
 @test "server/ha-active-Service: port and targetPort can be set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.port=8000' \
@@ -104,7 +104,7 @@ load _helpers
       yq -r '.spec.ports[0].port' | tee /dev/stderr)
   [ "${actual}" = "8000" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.targetPort=80' \
@@ -115,7 +115,7 @@ load _helpers
 
 @test "server/ha-active-Service: nodeport can set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.type=NodePort' \
@@ -127,7 +127,7 @@ load _helpers
 
 @test "server/ha-active-Service: nodeport can't set when type isn't NodePort" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.service.nodePort=30009' \
@@ -138,7 +138,7 @@ load _helpers
 
 @test "server/ha-active-Service: vault port name is http, when tlsDisable is true" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'global.tlsDisable=true' \
@@ -149,7 +149,7 @@ load _helpers
 
 @test "server/ha-active-Service: vault port name is https, when tlsDisable is false" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ha-active-service.yaml \
       --set 'server.ha.enabled=true' \
       --set 'global.tlsDisable=false' \

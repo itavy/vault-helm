@@ -4,7 +4,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: enable with server.dev.enabled true" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -14,7 +14,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: disable with global.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'global.enabled=false' \
       --set 'server.dev.enabled=true' \
@@ -25,7 +25,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: disable with injector.externalVaultAddr" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'injector.externalVaultAddr=http://vault-outside' \
       --set 'server.dev.enabled=true' \
@@ -36,7 +36,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: image defaults to server.image.repository:tag" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.image.repository=foo' \
       --set 'server.image.tag=1.2.3' \
@@ -49,7 +49,7 @@ load _helpers
 @test "server/ha-StatefulSet: image tag defaults to latest" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.image.repository=foo' \
       --set 'server.image.tag=' \
@@ -64,7 +64,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: default replicas" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -74,7 +74,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: cant set replicas" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.dev.replicas=100' \
@@ -88,7 +88,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: updateStrategy" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -101,7 +101,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: default resources" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -111,7 +111,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: custom resources" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.resources.requests.memory=256Mi' \
@@ -120,7 +120,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].resources.requests.memory' | tee /dev/stderr)
   [ "${actual}" = "256Mi" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.resources.limits.memory=256Mi' \
@@ -129,7 +129,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].resources.limits.memory' | tee /dev/stderr)
   [ "${actual}" = "256Mi" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.resources.requests.cpu=250m' \
@@ -137,7 +137,7 @@ load _helpers
       yq -r '.spec.template.spec.containers[0].resources.requests.cpu' | tee /dev/stderr)
   [ "${actual}" = "250m" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.resources.limits.cpu=250m' \
@@ -153,7 +153,7 @@ load _helpers
   cd `chart_dir`
 
   # Test that it defines it
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.extraVolumes[0].type=configMap' \
@@ -170,7 +170,7 @@ load _helpers
   [ "${actual}" = "null" ]
 
   # Test that it mounts it
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.extraVolumes[0].type=configMap' \
@@ -191,7 +191,7 @@ load _helpers
   cd `chart_dir`
 
   # Test that it defines it
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.extraVolumes[0].type=secret' \
@@ -208,7 +208,7 @@ load _helpers
   [ "${actual}" = "foo" ]
 
   # Test that it mounts it
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.extraVolumes[0].type=configMap' \
@@ -227,7 +227,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: no storageClass on claim by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -240,7 +240,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: set extraEnvironmentVars" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.extraEnvironmentVars.FOO=bar' \
@@ -270,7 +270,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: set extraSecretEnvironmentVars" {
   cd `chart_dir`
-  local object=$(helm template \
+  local object=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.extraSecretEnvironmentVars[0].envName=ENV_FOO_0' \
       --set 'server.extraSecretEnvironmentVars[0].secretName=secret_name_0' \
@@ -309,7 +309,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: can't set storageClass" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.dataStorage.enabled=true' \
@@ -318,7 +318,7 @@ load _helpers
       yq -r '.spec.volumeClaimTemplates' | tee /dev/stderr)
   [ "${actual}" = "null" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.auditStorage.enabled=true' \
@@ -327,7 +327,7 @@ load _helpers
       yq -r '.spec.volumeClaimTemplates' | tee /dev/stderr)
   [ "${actual}" = "null" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'server.auditStorage.enabled=true' \
@@ -343,7 +343,7 @@ load _helpers
 # Security Contexts
 @test "server/dev-StatefulSet: uid default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -353,7 +353,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: uid configurable" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml \
       --set 'server.uid=2000' \
       --set 'server.dev.enabled=true' \
@@ -364,7 +364,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: gid default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -374,7 +374,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: gid configurable" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml \
       --set 'server.gid=2000' \
       --set 'server.dev.enabled=true' \
@@ -385,7 +385,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: fsgroup default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml \
       --set 'server.dev.enabled=true' \
       . | tee /dev/stderr |
@@ -395,7 +395,7 @@ load _helpers
 
 @test "server/dev-StatefulSet: fsgroup configurable" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-statefulset.yaml \
       --set 'server.gid=2000' \
       --set 'server.dev.enabled=true' \

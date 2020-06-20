@@ -4,7 +4,7 @@ load _helpers
 
 @test "server/ingress: disabled by default" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml  \
       . || echo "---") | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
@@ -13,7 +13,7 @@ load _helpers
 
 @test "server/ingress: disable by injector.externalVaultAddr" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml  \
       --set 'server.ingress.enabled=true' \
       --set 'injector.externalVaultAddr=http://vault-outside' \
@@ -24,7 +24,7 @@ load _helpers
 
 @test "server/ingress: checking host entry gets added and path is /" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.ingress.hosts[0].host=test.com' \
@@ -33,7 +33,7 @@ load _helpers
       yq  -r '.spec.rules[0].host' | tee /dev/stderr)
   [ "${actual}" = 'test.com' ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.ingress.hosts[0].host=test.com' \
@@ -46,7 +46,7 @@ load _helpers
 @test "server/ingress: vault backend should be added when I specify a path" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.ingress.hosts[0].host=test.com' \
@@ -60,7 +60,7 @@ load _helpers
 @test "server/ingress: labels gets added to object" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.ingress.labels.traffic=external' \
@@ -73,7 +73,7 @@ load _helpers
 @test "server/ingress: annotations added to object - string" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.ingress.annotations=kubernetes.io/ingress.class: nginx' \
@@ -85,7 +85,7 @@ load _helpers
 @test "server/ingress: annotations added to object - yaml" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set server.ingress.annotations."kubernetes\.io/ingress\.class"=nginx \
@@ -97,7 +97,7 @@ load _helpers
 @test "server/ingress: uses active service when ha - yaml" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.dev.enabled=false' \
@@ -111,7 +111,7 @@ load _helpers
 @test "server/ingress: uses regular service when not ha - yaml" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-ingress.yaml \
       --set 'server.ingress.enabled=true' \
       --set 'server.dev.enabled=false' \

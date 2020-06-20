@@ -4,7 +4,7 @@ load _helpers
 
 @test "server/route: OpenShift - disabled by default" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --set 'global.openshift=true' \
       --show-only templates/server-route.yaml  \
       . || echo "---") | tee /dev/stderr |
@@ -14,7 +14,7 @@ load _helpers
 
 @test "server/route: OpenShift -disable by injector.externalVaultAddr" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml  \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -26,7 +26,7 @@ load _helpers
 
 @test "server/route: OpenShift - checking host entry gets added and path is /" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -39,7 +39,7 @@ load _helpers
 @test "server/route: OpenShift - vault backend should be added when I specify a path" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -53,7 +53,7 @@ load _helpers
 @test "server/route: OpenShift - labels gets added to object" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -67,7 +67,7 @@ load _helpers
 @test "server/route: OpenShift - annotations added to object - string" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -80,7 +80,7 @@ load _helpers
 @test "server/route: OpenShift - annotations added to object - yaml" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -93,7 +93,7 @@ load _helpers
 @test "server/route: OpenShift - route points to main service by default" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \
@@ -105,7 +105,7 @@ load _helpers
 @test "server/route: OpenShift - route points to active service by when HA" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-route.yaml \
       --set 'global.openshift=true' \
       --set 'server.route.enabled=true' \

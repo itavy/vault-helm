@@ -4,7 +4,7 @@ load _helpers
 
 @test "server/network-policy: OpenShift - disabled by default" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-network-policy.yaml  \
       . || echo "---") | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
@@ -13,7 +13,7 @@ load _helpers
 
 @test "server/network-policy: OpenShift - enabled if OpenShift" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --set 'global.openshift=true' \
       --show-only templates/server-network-policy.yaml  \
       . || echo "---") | tee /dev/stderr |

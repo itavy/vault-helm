@@ -4,21 +4,21 @@ load _helpers
 
 @test "ui/Service: disabled by default" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml \
       --set 'server.dev.enabled=true' \
       . || echo "---") | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "false" ]
 
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       . || echo "---") | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "false" ]
 
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.standalone.enabled=true' \
       . || echo "---") | tee /dev/stderr |
@@ -28,7 +28,7 @@ load _helpers
 
 @test "ui/Service: disable with ui.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.enabled=false' \
@@ -36,7 +36,7 @@ load _helpers
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "false" ]
 
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'ui.enabled=false' \
@@ -44,7 +44,7 @@ load _helpers
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "false" ]
 
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.standalone.enabled=true' \
       --set 'ui.enabled=false' \
@@ -55,7 +55,7 @@ load _helpers
 
 @test "ui/Service: disable with injector.externalVaultAddr" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'injector.externalVaultAddr=http://vault-outside' \
@@ -63,7 +63,7 @@ load _helpers
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "false" ]
 
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'injector.externalVaultAddr=http://vault-outside' \
@@ -71,7 +71,7 @@ load _helpers
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "false" ]
 
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.standalone.enabled=true' \
       --set 'injector.externalVaultAddr=http://vault-outside' \
@@ -82,7 +82,7 @@ load _helpers
 
 @test "ui/Service: ClusterIP type by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.enabled=true' \
@@ -90,7 +90,7 @@ load _helpers
       yq -r '.spec.type' | tee /dev/stderr)
   [ "${actual}" = "ClusterIP" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'ui.enabled=true' \
@@ -98,7 +98,7 @@ load _helpers
       yq -r '.spec.type' | tee /dev/stderr)
   [ "${actual}" = "ClusterIP" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.standalone.enabled=true' \
       --set 'ui.enabled=true' \
@@ -109,7 +109,7 @@ load _helpers
 
 @test "ui/Service: specified type" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -118,7 +118,7 @@ load _helpers
       yq -r '.spec.type' | tee /dev/stderr)
   [ "${actual}" = "LoadBalancer" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -127,7 +127,7 @@ load _helpers
       yq -r '.spec.type' | tee /dev/stderr)
   [ "${actual}" = "LoadBalancer" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.standalone.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -139,7 +139,7 @@ load _helpers
 
 @test "ui/Service: LoadBalancerIP set if specified and serviceType == LoadBalancer" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -149,7 +149,7 @@ load _helpers
       yq -r '.spec.loadBalancerIP' | tee /dev/stderr)
   [ "${actual}" = "123.123.123.123" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.serviceType=ClusterIP' \
@@ -162,7 +162,7 @@ load _helpers
 
 @test "ui/Service: set loadBalancerSourceRanges when LoadBalancer is configured as serviceType" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -172,7 +172,7 @@ load _helpers
       yq -r '.spec.loadBalancerSourceRanges[0]' | tee /dev/stderr)
   [ "${actual}" = "123.123.123.123" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.serviceType=ClusterIP' \
@@ -185,7 +185,7 @@ load _helpers
 
 @test "ui/Service: specify annotations" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.dev.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -195,7 +195,7 @@ load _helpers
       yq -r '.metadata.annotations["foo"]' | tee /dev/stderr)
   [ "${actual}" = "bar" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -205,7 +205,7 @@ load _helpers
       yq -r '.metadata.annotations["foo"]' | tee /dev/stderr)
   [ "${actual}" = "bar" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -215,7 +215,7 @@ load _helpers
       yq -r '.metadata.annotations["foo"]' | tee /dev/stderr)
   [ "${actual}" = "bar" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'ui.serviceType=LoadBalancer' \
@@ -228,7 +228,7 @@ load _helpers
 @test "ui/Service: port name is http, when tlsDisable is true" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml \
       --set 'global.tlsDisable=true' \
       --set 'ui.enabled=true' \
@@ -240,7 +240,7 @@ load _helpers
 @test "ui/Service: port name is https, when tlsDisable is false" {
   cd `chart_dir`
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/ui-service.yaml \
       --set 'global.tlsDisable=false' \
       --set 'ui.enabled=true' \

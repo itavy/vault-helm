@@ -4,7 +4,7 @@ load _helpers
 
 @test "server/DisruptionBudget: enabled by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
@@ -14,7 +14,7 @@ load _helpers
 
 @test "server/DisruptionBudget: disable with server.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'globa.enabled=false' \
       --set 'server.ha.enabled=false' \
@@ -25,7 +25,7 @@ load _helpers
 
 @test "server/DisruptionBudget: disable with server.disruptionBudget.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'server.ha.disruptionBudget.enabled=false' \
       . || echo "---") | tee /dev/stderr |
@@ -35,7 +35,7 @@ load _helpers
 
 @test "server/DisruptionBudget: disable with global.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'global.enabled=false' \
       . || echo "---") | tee /dev/stderr |
@@ -45,7 +45,7 @@ load _helpers
 
 @test "server/DisruptionBudget: disable with injector.exernalVaultAddr" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'injector.externalVaultAddr=http://vault-outside' \
       . || echo "---") | tee /dev/stderr |
@@ -55,7 +55,7 @@ load _helpers
 
 @test "server/DisruptionBudget: correct maxUnavailable with n=1" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.replicas=1' \
@@ -66,7 +66,7 @@ load _helpers
 
 @test "server/DisruptionBudget: correct maxUnavailable with n=3" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.replicas=3' \
@@ -77,7 +77,7 @@ load _helpers
 
 @test "server/DisruptionBudget: correct maxUnavailable with n=5" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-disruptionbudget.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.replicas=5' \

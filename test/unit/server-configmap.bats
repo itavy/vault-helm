@@ -4,20 +4,20 @@ load _helpers
 
 @test "server/ConfigMap: enabled by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       . | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "true" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "true" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.raft.enabled=true' \
@@ -25,7 +25,7 @@ load _helpers
       yq 'length > 0' | tee /dev/stderr)
   [ "${actual}" = "true" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'server.standalone.enabled=true' \
       . | tee /dev/stderr |
@@ -35,7 +35,7 @@ load _helpers
 
 @test "server/ConfigMap: raft config disabled by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'server.ha.enabled=true' \
       . | tee /dev/stderr |
@@ -45,7 +45,7 @@ load _helpers
 
 @test "server/ConfigMap: raft config can be enabled" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.raft.enabled=true' \
@@ -57,7 +57,7 @@ load _helpers
 
 @test "server/ConfigMap: disabled by server.dev.enabled true" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'server.dev.enabled=true' \
       . || echo "---") | tee /dev/stderr |
@@ -67,7 +67,7 @@ load _helpers
 
 @test "server/ConfigMap: disable with global.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml  \
       --set 'global.enabled=false' \
       . || echo "---") | tee /dev/stderr |
@@ -77,7 +77,7 @@ load _helpers
 
 @test "server/ConfigMap: standalone extraConfig is set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml  \
       --set 'server.standalone.enabled=true' \
       --set 'server.standalone.config="{\"hello\": \"world\"}"' \
@@ -85,7 +85,7 @@ load _helpers
       yq '.data["extraconfig-from-values.hcl"] | match("world") | length' | tee /dev/stderr)
   [ ! -z "${actual}" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml  \
       --set 'server.standalone.enabled=true' \
       --set 'server.standalone.config="{\"foo\": \"bar\"}"' \
@@ -96,7 +96,7 @@ load _helpers
 
 @test "server/ConfigMap: ha extraConfig is set" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.config="{\"hello\": \"world\"}"' \
@@ -104,7 +104,7 @@ load _helpers
       yq '.data["extraconfig-from-values.hcl"] | match("world") | length' | tee /dev/stderr)
   [ ! -z "${actual}" ]
 
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml  \
       --set 'server.ha.enabled=true' \
       --set 'server.ha.config="{\"foo\": \"bar\"}"' \
@@ -115,7 +115,7 @@ load _helpers
 
 @test "server/ConfigMap: disabled by injector.externalVaultAddr" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/server-config-configmap.yaml \
       --set 'injector.externalVaultAddr=http://vault-outside' \
       . || echo "---") | tee /dev/stderr |

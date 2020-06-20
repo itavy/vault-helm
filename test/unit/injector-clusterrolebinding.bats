@@ -4,7 +4,7 @@ load _helpers
 
 @test "injector/ClusterRoleBinding: enabled by default" {
   cd `chart_dir`
-  local actual=$(helm template \
+  local actual=$(${BATS_HELM_CMD} template \
       --show-only templates/injector-clusterrolebinding.yaml  \
       . | tee /dev/stderr |
       yq 'length > 0' | tee /dev/stderr)
@@ -13,7 +13,7 @@ load _helpers
 
 @test "injector/ClusterRoleBinding: disable with global.enabled" {
   cd `chart_dir`
-  local actual=$( (helm template \
+  local actual=$( (${BATS_HELM_CMD} template \
       --show-only templates/injector-clusterrolebinding.yaml  \
       --set 'global.enabled=false' \
       . || echo "---") | tee /dev/stderr |
